@@ -1,35 +1,61 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-  <div class="container-fluid">
-    <a class="navbar-brand" routerLink="/">Navbar</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" routerLink="/">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Opciones
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" routerLink="/vehiculos">Vehiculos</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-          </ul>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-        </li>
-      </ul>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
-    </div>
+<div class="sidebar">
+
+  <!-- Header con logo -->
+  <div class="sidebar-header py-3 ps-3 px-3">
+<img src="/assets/images/logo.png" alt="SysFlex Logo" class="brand-logo">
   </div>
-</nav>
+
+  <ul class="menu-list">
+
+    <!-- Inicio -->
+    <li>
+      <a routerLink="/" class="menu-item menu-white ps-3">
+        Inicio
+      </a>
+    </li>
+
+    <!-- Solicitudes -->
+    <li>
+      <a routerLink="#" class="menu-item menu-red ps-3">
+        Solicitudes
+      </a>
+    </li>
+
+    <!-- Mantenimientos (con dropdown) -->
+    <li class="dropdown">
+      <a class="menu-item menu-red dropdown-toggle ps-3"
+         data-bs-toggle="collapse"
+         href="#menuMantenimientos">
+        Mantenimientos
+        <i class="fas fa-chevron-down float-end"></i>
+      </a>
+
+      <!-- Submenú: Vehículos -->
+      <ul id="menuMantenimientos" class="collapse dropdown-menu-custom">
+        <li><a routerLink="/vehiculos" class="dropdown-link">Vehículos</a></li>
+      </ul>
+    </li>
+
+    <!-- Configuración -->
+    <li>
+      <a routerLink="#" class="menu-item menu-white ps-3">
+        Configuración
+      </a>
+    </li>
+
+    <!-- Logout -->
+    <li>
+      <a routerLink="#" class="menu-item menu-white ps-3">
+        Cerrar sesión
+      </a>
+    </li>
+
+  </ul>
+
+  <!-- Pie de sidebar -->
+  <div class="sidebar-footer px-3 py-3 mt-auto">
+    <div class="fw-bold">Encargada</div>
+    <div>Secretaria</div>
+  </div>
+
+</div>

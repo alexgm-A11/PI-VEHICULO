@@ -1,0 +1,134 @@
+/* Contenedor principal */
+.home-container {
+  margin-left: 280px;
+  padding: 0;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================ */
+/* PRESENTACIÓN PRINCIPAL */
+/* ============================================ */
+
+.presentation-section {
+  width: 100%;
+  max-width: 900px;
+  padding: 60px 40px;
+  text-align: center;
+}
+
+.presentation-content {
+  background: white;
+  border-radius: 20px;
+  padding: 60px 50px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e8e8e8;
+}
+
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.logo-container i {
+  font-size: 3.5rem;
+  color: white;
+}
+
+.main-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 20px;
+  letter-spacing: -1px;
+  line-height: 1.2;
+}
+
+.main-description {
+  font-size: 1.15rem;
+  color: #6b7280;
+  line-height: 1.8;
+  margin-bottom: 40px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 1.05rem;
+  color: #495057;
+  padding: 12px 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+  background: #e9ecef;
+  transform: translateX(5px);
+}
+
+.feature-item i {
+  color: #c8102e;
+  font-size: 1.3rem;
+}
+
+.feature-item span {
+  font-weight: 500;
+}
+
+/* ============================================ */
+/* RESPONSIVE */
+/* ============================================ */
+
+@media (max-width: 768px) {
+  .home-container {
+    margin-left: 0;
+    padding: 20px;
+  }
+
+  .presentation-content {
+    padding: 40px 30px;
+  }
+
+  .logo-container {
+    width: 100px;
+    height: 100px;
+  }
+
+  .logo-container i {
+    font-size: 3rem;
+  }
+
+  .main-title {
+    font-size: 2rem;
+  }
+
+  .main-description {
+    font-size: 1rem;
+  }
+
+  .feature-item {
+    font-size: 0.95rem;
+  }
+}

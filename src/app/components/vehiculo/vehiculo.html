@@ -1,69 +1,71 @@
 <app-navbar></app-navbar>
-<div class="container mt-4">
+<div class="container-flex mt-4" style="margin-left: 300px;">
     
-  <h1 class="text-center mb-4">Gestión de Vehículos</h1>
-  <div class="d-flex justify-content-between mb-4">
-     
-    <div class="position-relative flex-grow-1" style="max-width: 1100px;">
-          <i class="fas fa-search position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #999;"></i>
-          <input
-            type="text"
-            class="form-control ps-5"
-            placeholder="Buscar en Placa, modelo o Volumen"
-            style="padding-right: 100px;"
-          />
-          <button class="btn btn-secondary btn-sm position-absolute" style="right: 8px; top: 30%; transform: translateY(-35%);">
-            Buscar
-          </button>
-        </div>
-    <!-- Botón para agregar vehículo -->
-    <button class="btn btn-success btn-lg" (click)="abrirNuevo()">
-      <i class="fas fa-plus-circle"></i> Agregar Vehículo
+  <!-- Encabezado con título y botón -->
+  <div class="header-box mb-4">
+    <h1 class="title-text">Gestión de Vehículos</h1>
+    <button class="btn btn-add" (click)="abrirNuevo()">
+      <i class="fas fa-plus"></i> Agregar vehículos
     </button>
   </div>
+
+  <!-- Buscador -->
+  <div class="search-container mb-4">
+    <div class="search-box">
+      <i class="fas fa-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar por Placa, modelo o Volumen"
+        [(ngModel)]="searchPlaca"
+      />
+      <button class="btn-search" (click)="buscar()">
+        Buscar
+      </button>
+    </div>
+  </div>
+
   <!-- Tabla de vehículos -->
-  <table class="table table-bordered table-striped mt-4" *ngIf="vehiculos && vehiculos.length > 0">
-    <thead class="thead-dark">
-      <tr>
-        <th>#</th>
-        <th>ID</th>
-        <th>Placa</th>
-        <th>Modelo</th>
-        <th>Capacidad</th>
-        <th>Altura (m)</th>
-        <th>Precio</th>
-        <th>Estado</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let v of vehiculos; let i = index">
-        <th scope="row">{{ i + 1 }}</th>
-        <td>{{ v.id }}</td>
-        <td>{{ v.placa }}</td>
-        <td>{{ v.modelo }}</td>
-        <td>{{ v.capacidad | number:'1.2-2' }} m³</td>
-        <td>{{ v.altura | number:'1.2-2' }} m</td>
-        <td>{{ v.precio | currency }}</td>
-        <td>
-          <span class="badge" 
-            [ngClass]="{
-              'bg-success': v.estadoId === 1,
-              'bg-warning': v.estadoId === 2,
-              'bg-danger': v.estadoId === 3,
-              'bg-secondary': v.estadoId !== 1 && v.estadoId !== 2 && v.estadoId !== 3
-            }">
-            {{ getEstadoNombre(v.estadoId) }}
-          </span>
-        </td>
-        <td class="text-end">
-          <button class="btn btn-warning btn-sm" (click)="abrirEditar(v)">
-            <i class="fas fa-edit"></i> Editar
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-container" *ngIf="vehiculos && vehiculos.length > 0">
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Placa</th>
+          <th>Modelo</th>
+          <th>Volumen</th>
+          <th>Altura (m)</th>
+          <th>Precio</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let v of vehiculos; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ v.placa }}</td>
+          <td>{{ v.modelo }}</td>
+          <td>{{ v.capacidad | number:'1.1-1' }}m³</td>
+          <td>{{ v.altura | number:'1.1-1' }} m</td>
+          <td>S/ {{ v.precio | number:'1.0-2' }}</td>
+          <td>
+            <span class="status-badge" 
+              [ngClass]="{
+                'status-active': v.estadoId === 1,
+                'status-inactive': v.estadoId === 2 || v.estadoId === 3
+              }">
+              {{ getEstadoNombre(v.estadoId) }}
+            </span>
+          </td>
+          <td>
+            <button class="btn-edit" (click)="abrirEditar(v)">
+              <i class="fas fa-edit"></i> Editar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <div class="alert alert-info mt-4" *ngIf="!vehiculos || vehiculos.length === 0">
     No hay vehículos registrados.
@@ -72,21 +74,23 @@
 
 <!-- Modal para crear/editar -->
 <div #modal class="modal fade" tabindex="-1" aria-labelledby="modalLabel">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-dark text-white">
-        <h5 class="modal-title" id="modalLabel">{{ tituloModal }}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-custom">
+      <div class="modal-header-custom">
+        <h5 class="modal-title-custom" id="modalLabel">{{ tituloModal }}</h5>
+        <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
 
-      <div class="modal-body">
+      <div class="modal-body-custom">
         <form [formGroup]="form" (ngSubmit)="guardar()">
-          
+
           <!-- Placa -->
-          <div class="mb-3">
-            <label class="form-label">Placa *</label>
-            <input type="text" class="form-control" formControlName="placa" placeholder="Ej. ABC123" maxlength="6" />
-            <div class="text-danger" *ngIf="form.get('placa')?.touched && form.get('placa')?.invalid">
+          <div class="form-group-custom">
+            <label class="form-label-custom">Placa *</label>
+            <input type="text" class="form-input-custom" formControlName="placa" placeholder="Ej. ABC123" maxlength="6" />
+            <div class="error-message" *ngIf="form.get('placa')?.touched && form.get('placa')?.invalid">
               <small *ngIf="form.get('placa')?.errors?.['required']">La placa es obligatoria.</small>
               <small *ngIf="form.get('placa')?.errors?.['minlength']">Mínimo 6 caracteres.</small>
               <small *ngIf="form.get('placa')?.errors?.['maxlength']">Máximo 6 caracteres.</small>
@@ -94,61 +98,60 @@
           </div>
 
           <!-- Modelo -->
-          <div class="mb-3">
-            <label class="form-label">Modelo *</label>
-            <input type="text" class="form-control" formControlName="modelo" placeholder="Ej. Toyota Corolla" />
-            <div class="text-danger" *ngIf="form.get('modelo')?.touched && form.get('modelo')?.invalid">
+          <div class="form-group-custom">
+            <label class="form-label-custom">Modelo *</label>
+            <input type="text" class="form-input-custom" formControlName="modelo" placeholder="Ej. Toyota Corolla" />
+            <div class="error-message" *ngIf="form.get('modelo')?.touched && form.get('modelo')?.invalid">
               <small *ngIf="form.get('modelo')?.errors?.['required']">El modelo es obligatorio.</small>
               <small *ngIf="form.get('modelo')?.errors?.['minlength']">Mínimo 2 caracteres.</small>
             </div>
           </div>
 
           <!-- Capacidad -->
-          <div class="mb-3">
-            <label class="form-label">Capacidad *</label>
-            <input type="number" class="form-control" formControlName="capacidad" min="1" />
-            <div class="text-danger" *ngIf="form.get('capacidad')?.touched && form.get('capacidad')?.invalid">
+          <div class="form-group-custom">
+            <label class="form-label-custom">Capacidad *</label>
+            <input type="number" class="form-input-custom" formControlName="capacidad" min="1" placeholder="Ej. 1.9" />
+            <div class="error-message" *ngIf="form.get('capacidad')?.touched && form.get('capacidad')?.invalid">
               <small *ngIf="form.get('capacidad')?.errors?.['required']">La capacidad es obligatoria.</small>
               <small *ngIf="form.get('capacidad')?.errors?.['min']">Mínimo 1.</small>
             </div>
           </div>
 
           <!-- Altura -->
-          <div class="mb-3">
-            <label class="form-label">Altura (m) *</label>
-            <input type="number" step="0.01" class="form-control" formControlName="altura" min="0" />
-            <div class="text-danger" *ngIf="form.get('altura')?.touched && form.get('altura')?.invalid">
+          <div class="form-group-custom">
+            <label class="form-label-custom">Altura (m) *</label>
+            <input type="number" step="0.01" class="form-input-custom" formControlName="altura" min="0" placeholder="Ej. 4" />
+            <div class="error-message" *ngIf="form.get('altura')?.touched && form.get('altura')?.invalid">
               <small *ngIf="form.get('altura')?.errors?.['required']">La altura es obligatoria.</small>
               <small *ngIf="form.get('altura')?.errors?.['min']">La altura debe ser ≥ 0.</small>
             </div>
           </div>
 
           <!-- Precio -->
-          <div class="mb-3">
-            <label class="form-label">Precio *</label>
-            <input type="number" step="0.01" class="form-control" formControlName="precio" min="0" />
-            <div class="text-danger" *ngIf="form.get('precio')?.touched && form.get('precio')?.invalid">
+          <div class="form-group-custom">
+            <label class="form-label-custom">Precio *</label>
+            <input type="number" step="0.01" class="form-input-custom" formControlName="precio" min="0" placeholder="Ej. 3000" />
+            <div class="error-message" *ngIf="form.get('precio')?.touched && form.get('precio')?.invalid">
               <small *ngIf="form.get('precio')?.errors?.['required']">El precio es obligatorio.</small>
               <small *ngIf="form.get('precio')?.errors?.['min']">El precio debe ser mayor o igual a 0.</small>
             </div>
           </div>
 
           <!-- Estado -->
-          <div class="mb-3">
-            <label class="form-label">Estado *</label>
-            <select class="form-select" formControlName="estadoId" [compareWith]="compareEstados">
+          <div class="form-group-custom">
+            <label class="form-label-custom">Estado *</label>
+            <select class="form-select-custom" formControlName="estadoId" [compareWith]="compareEstados">
               <option [ngValue]="null" disabled>Seleccione un estado</option>
               <option *ngFor="let e of getFilteredEstados()" [ngValue]="e.id">{{ e.estado }}</option>
             </select>
-            <div class="text-danger" *ngIf="form.get('estadoId')?.touched && form.get('estadoId')?.invalid">
+            <div class="error-message" *ngIf="form.get('estadoId')?.touched && form.get('estadoId')?.invalid">
               <small>Seleccione un estado.</small>
             </div>
           </div>
 
-          <!-- Botones -->
-          <div class="text-end">
-            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+          <div class="modal-footer-custom">
+            <button type="button" class="btn-cancel-custom" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn-submit-custom" [disabled]="form.invalid">
               {{ editId ? 'Actualizar' : 'Guardar' }}
             </button>
           </div>

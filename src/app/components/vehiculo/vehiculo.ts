@@ -1,16 +1,17 @@
 import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { Vehiculo } from '../../models/vehiculo';
-import { Estado } from '../../models/estado'; 
+import { Estado } from '../../models/estado';
 import { VehiculoService } from '../../services/vehiculo';
-import { EstadoService } from '../../services/estado'; 
+import { EstadoService } from '../../services/estado';
 import { Navbar } from '../navbar/navbar';
 
 @Component({
   selector: 'app-vehiculo',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Navbar], 
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, Navbar],
   templateUrl: './vehiculo.html',
   styleUrls: ['./vehiculo.css']
 })
@@ -24,10 +25,15 @@ export class VehiculoComponent implements OnInit {
   tituloModal = 'Nuevo Vehículo';
   editId: number | null = null;
 
-  // Flag para controlar si estamos creando un vehículo
   isCreating = false;
 
-  // Restaurado 'precio' al formulario
+  // Campos de búsqueda
+  searchPlaca: string = '';
+  searchModelo: string = '';
+  searchAno: number | null = null;
+
+  loading: boolean = false;
+
   form = this.fb.group({
     placa: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]],
     modelo: ['', [Validators.required, Validators.minLength(2)]],
@@ -68,12 +74,30 @@ export class VehiculoComponent implements OnInit {
     });
   }
 
+  // 🔍 CORREGIDO: une todos los filtros en un solo string para el backend
+  buscar(): void {
+    this.loading = true;
+
+    const filtro =
+      `${this.searchPlaca ?? ''} ${this.searchModelo ?? ''} ${this.searchAno ?? ''}`.trim();
+
+    this.vehiculoService.buscar(filtro).subscribe({
+      next: (data) => {
+        this.vehiculos = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error en búsqueda:', err);
+        this.loading = false;
+      }
+    });
+  }
+
   getEstadoNombre(estadoId: number | undefined): string {
     if (estadoId == null) return '—';
     return this.estados.find(e => e.id === estadoId)?.estado || 'Desconocido';
   }
 
-  // Comparación robusta para el select [compareWith]
   compareEstados = (a: number | null, b: number | null): boolean => {
     if (a == null && b == null) return true;
     if (a == null || b == null) return false;
@@ -83,14 +107,14 @@ export class VehiculoComponent implements OnInit {
   abrirNuevo(): void {
     this.tituloModal = 'Nuevo Vehículo';
     this.editId = null;
-    this.isCreating = true;  // Establecer que estamos creando
+    this.isCreating = true;
     this.form.reset({
       placa: '',
       modelo: '',
       capacidad: 1,
       altura: 0,
       precio: 0,
-      estadoId: 1  // Asegurarse de que por defecto sea "Activo"
+      estadoId: 1
     });
     this.showModal();
   }
@@ -102,13 +126,13 @@ export class VehiculoComponent implements OnInit {
     }
     this.tituloModal = 'Editar Vehículo';
     this.editId = vehiculo.id;
-    this.isCreating = false;  // Establecer que estamos editando
+    this.isCreating = false;
     this.form.patchValue({
       placa: vehiculo.placa ?? '',
       modelo: vehiculo.modelo ?? '',
       capacidad: vehiculo.capacidad ?? 1,
-      altura: vehiculo.altura ?? 0,
-      precio: vehiculo.precio ?? 0,
+      altura: vehiculo.altura ?? 1,
+      precio: vehiculo.precio ?? 1,
       estadoId: vehiculo.estadoId ?? null
     });
     this.showModal();
@@ -117,11 +141,10 @@ export class VehiculoComponent implements OnInit {
   guardar(): void {
     if (this.form.invalid) return;
 
-    // Incluir 'precio' en el DTO que se va a enviar
     const dto: Vehiculo = this.form.value as Vehiculo;
-    
-    const obs = this.editId 
-      ? this.vehiculoService.update(this.editId, dto) 
+
+    const obs = this.editId
+      ? this.vehiculoService.update(this.editId, dto)
       : this.vehiculoService.create(dto);
 
     obs.subscribe({
@@ -147,7 +170,6 @@ export class VehiculoComponent implements OnInit {
     this.bsModal?.hide();
   }
 
-  // Método para filtrar los estados en el formulario
   getFilteredEstados(): Estado[] {
     if (this.isCreating) {
       return this.estados.filter(e => e.estado === 'Activo');
